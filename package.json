@@ -1,0 +1,24 @@
+{
+  "name": "sitc-2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd backend && node server.js\" \"cd sitc-react && npm start\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "concurrently": "^5.3.0",
+    "dropbox": "^8.2.0",
+    "formidable": "^1.2.2",
+    "nodemon": "^2.0.6",
+    "react-dropbox-chooser": "0.0.5",
+    "react-dropzone": "^11.2.4",
+    "react-iframe": "^1.8.0"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "description": ""
+}
