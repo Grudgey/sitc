@@ -20,8 +20,8 @@ body {
 
 .form-signin {
   width: 100%;
-  max-width: 330px;
-  padding: 15px;
+  max-width: 500px;
+  padding: 25px;
   margin: 0 auto;
 }
 .form-signin .checkbox {
@@ -54,7 +54,62 @@ body {
     padding: 4%;
 }
 
+.upload-div {
+  background-color: rgb(29, 29, 29);
+  border-radius: 10%;
+
+}
+
+.upload-position {
+  padding: 2%;
+  background-color: rgb(29, 29, 29);
+  border-radius: 10%;
+  position: absolute;  
+  top:30%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 h1 {
     color: rgb(255, 255, 255);
     font-weight: 200;
+}
+
+.project {
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 0 2px 5px #ccc;
+    padding: 10px;
+    /* width: 240px; */
+    margin: 16px;
+    float: left;
+  }
+  .project h1 {
+    font-size: 1.1em;
+    margin-bottom: 6px;
+  }
+  .project p {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .logout {
+      position: absolute;
+      top:0;
+      right:0;
+  }
+
+.upload {
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: rgb(29, 29, 29);
+    padding: 1%;
+}
+
+.upload p {
+    margin-bottom: 0px;
+    color: white;
 }

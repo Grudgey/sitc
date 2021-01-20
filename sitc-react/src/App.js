@@ -164,19 +164,19 @@ function App() {
     <div>
       {authenticated ? (
         <div>
-          <button onClick={logout} name="logout">
+          <button className="logout" onClick={logout} name="logout">
             Logout
           </button>
 
           <ProjectsList data={data}/>
 
-          {/* <Upload
+          <Upload
             setArtist={setArtist}
             artist={artist}
             setSong={setSong}
             song={song}
             putDataToDB={putDataToDB}
-          /> */}
+          />
         </div>
       ) : (
         <Login authenticate={authenticate} />

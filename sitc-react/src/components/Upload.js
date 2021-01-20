@@ -37,36 +37,50 @@ function Upload(props) {
   //then get's the link for it, then adds the artist / title/ link to the db.
   return (
     <div>
-      <div
-        onClick={toggleOpen}
-        style={{ backgroundColor: "black", width: "30px", height: "30px" }}
-        className="slide"
-      />
+      <div onClick={toggleOpen} className="upload">
+        <p>UPLOAD NEW PROJECT</p>
+      </div>
       <Modal
         open={open}
         onClose={toggleOpen}
         aria-labelledby="Image pop-up"
         aria-describedby="Image description"
       >
-        <form onSubmit={dropboxUpload}>
-          <input
-            type="text"
-            onChange={(e) => props.setArtist(e.target.value)}
-            placeholder="Artist"
-            value={props.artist}
-            style={{ width: "200px" }}
-          />
-
-          <input
-            type="text"
-            onChange={(e) => props.setSong(e.target.value)}
-            placeholder="Song Title"
-            value={props.song}
-            style={{ width: "200px" }}
-          />
-          <input type="file" id="file-upload" />
-          <button type="submit">ADD NEW TRACK</button>
-        </form>
+        <div className="upload-position">
+        <h1 className="mb-3">Create new project</h1>
+          <form className="form-signin" onSubmit={dropboxUpload}>
+            <label for="inputArtist" className="visually-hidden">
+              Artist
+            </label>
+            <input
+              required
+              autofocus
+              id="inputArtist"
+              className="form-control"
+              type="text"
+              onChange={(e) => props.setArtist(e.target.value)}
+              placeholder="Artist"
+              value={props.artist}
+            />
+            <label for="inputSong" className="visually-hidden">
+              Song
+            </label>
+            <input
+              required
+              autofocus
+              id="inputSong"
+              className="form-control"
+              type="text"
+              onChange={(e) => props.setSong(e.target.value)}
+              placeholder="Song Title"
+              value={props.song}
+            />
+            <input className="form-control" type="file" id="file-upload" required/>
+            <button className="btn btn-lg btn-light btn-block" type="submit">
+              ADD NEW TRACK
+            </button>
+          </form>
+        </div>
       </Modal>
     </div>
   );

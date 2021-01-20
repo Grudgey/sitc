@@ -5,13 +5,11 @@ export default function Project(props) {
     const dat = props.dat;
 
   return (  
-    <div key={dat.song}>
-    <li style={{ padding: "10px" }}>
-      <span style={{ color: "gray" }}> Artist: </span> {dat.artist}
-    </li>
-    <li style={{ padding: "10px" }}>
-      <span style={{ color: "gray" }}> Song: </span> {dat.song}
-    </li>
+    <div className="project" key={dat.id}>
+
+    <p>Artist: {dat.artist}</p>
+    <p>Song: {dat.song}</p>
+    
     <figure>
       <figcaption></figcaption>
       <audio controls src={dat.link}>
