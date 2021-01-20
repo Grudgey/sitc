@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Upload from "./components/Upload.js";
 import Login from "./components/Login";
-import { Modal } from "@material-ui/core";
-import "./App.css";
 import axios from "axios";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import ProjectsList from "./components/ProjectsList.js";
 
 function App() {
+  axios.defaults.withCredentials = true;
   // initialize our state
   // const [state, setState] = useState ({
   //   data: [],
@@ -30,12 +29,6 @@ function App() {
 
   const [authenticated, setAuthentication] = useState(false);
 
-  const [open, setState] = useState(false);
-
-  const toggleOpen = () => {
-    setState(!open);
-  };
-
   //setState(prevValue) {} spread operator
 
   // just a note, here, in the front end, we use the id key of our data object
@@ -49,9 +42,17 @@ function App() {
     if (intervalIsSet === false) {
       setIntervalIsSet(true);
     }
-    fetch("http://localhost:3001/api/getData")
-      .then((data) => data.json())
-      .then((res) => setData(res.data));
+    axios("http://localhost:3001/api/getData", { withCredentials: true })
+      // .then(function (response) {
+      //     console.log(response.data);
+      // });
+      .then((response) => {
+        if (response.data === "Is not authenticated") {
+          console.log(response.data.data);
+        } else {
+          setData(response.data.data);
+        }
+      });
   }
 
   // our put method that uses our backend api
@@ -72,14 +73,34 @@ function App() {
     });
   }
 
-  function authenticate(credentials) {
+  function logout() {
+    axios
+      .get("http://localhost:3001/api/logout", { withCredentials: true })
+      .then(function (response) {
+        console.log("Logged out");
+        console.log(response);
+        setAuthentication(false);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  function authenticate(credentials, loginType) {
     const { username, password } = credentials;
 
+    // const postRoute = (loginType === "register") ?
+    // "http://localhost:3001/api/register" : "http://localhost:3001/api/login";
+
     axios
-      .post("http://localhost:3001/api/register", {
-        password: password,
-        username: username,
-      })
+      .post(
+        "http://localhost:3001/api/login",
+        {
+          password: password,
+          username: username,
+        },
+        { withCredentials: true }
+      )
       .then(function (response) {
         if (response.status === 200) {
           console.log("Logged in");
@@ -143,50 +164,19 @@ function App() {
     <div>
       {authenticated ? (
         <div>
-          <ul>
-            {data.length <= 0
-              ? "NO DB ENTRIES YET"
-              : data.map((dat) => (
-                  //all of this should be put in a 'artist - song' component
-                  <div key={dat.song}>
-                    <li style={{ padding: "10px" }}>
-                      <span style={{ color: "gray" }}> Artist: </span>{" "}
-                      {dat.artist}
-                    </li>
-                    <li style={{ padding: "10px" }}>
-                      <span style={{ color: "gray" }}> Song: </span> {dat.song}
-                    </li>
-                    <figure>
-                      <figcaption></figcaption>
-                      <audio controls src={dat.link}>
-                        Your browser does not support the
-                        <code>audio</code> element.
-                      </audio>
-                    </figure>
-                  </div>
-                ))}
-          </ul>
+          <button onClick={logout} name="logout">
+            Logout
+          </button>
 
-          <div
-            onClick={toggleOpen}
-            style={{ backgroundColor: "black", width: "30px", height: "30px" }}
-            className="slide"
-          />
+          <ProjectsList data={data}/>
 
-          <Modal
-            open={open}
-            onClose={toggleOpen}
-            aria-labelledby="Image pop-up"
-            aria-describedby="Image description"
-          >
-            <Upload
-              setArtist={setArtist}
-              artist={artist}
-              setSong={setSong}
-              song={song}
-              putDataToDB={putDataToDB}
-            />
-          </Modal>
+          {/* <Upload
+            setArtist={setArtist}
+            artist={artist}
+            setSong={setSong}
+            song={song}
+            putDataToDB={putDataToDB}
+          /> */}
         </div>
       ) : (
         <Login authenticate={authenticate} />

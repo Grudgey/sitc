@@ -1,17 +1,17 @@
 //IMPORTS
 require('dotenv').config();
-const mongoose = require('mongoose');
 const express = require('express');
-var cors = require('cors');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const passport = require('passport');
+const passportLocalMongoose = require('passport-local-mongoose');
+var cors = require('cors');
 const logger = require('morgan');
 const Data = require('./data.js');
 const { Dropbox } = require('dropbox');
 const fs = require('fs');
 var path = require('path');
-const session = require('express-session');
-const passport = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 //DROPBOX
 
@@ -39,25 +39,31 @@ function getDropboxSharingLink(fileName, callback) {
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: "http://localhost:3000"
+}));
 
-const router = express.Router();
+// app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(bodyParser.json());
 
 // append /api for our http requests
-app.use('/api', router);
 
 app.use(session({
-  secret: process.env.SECRETS,
+  secret: process.env.SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {secure: false, maxAge: 1000*60, httpOnly: false}
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// const router = express.Router();
+// app.use('/api', router);
 
 mongoose.connect(process.env.DBROUTE, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set("useCreateIndex", true);
@@ -84,13 +90,25 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 
-router.get('/getData', (req, res) => {
+app.get('/api/getData', (req, res) => {
+
+  console.log("Received getData");
+
+  if(req.isAuthenticated()) {
+    console.log("Authenticated");
+    console.log(req.sessionID);
     Data.find((err, data) => {
       if (err) return res.json({ success: false, error: err });
       return res.json({ success: true, data: data });
     });
+  } else {
+    console.log("Is not authenticated");
+    console.log(req.sessionID);
+    res.send("Is not authenticated");
+  }
+
 });
 
 // router.post('/updateData', (req, res) => {
@@ -109,7 +127,7 @@ router.get('/getData', (req, res) => {
 //   });
 // });
 //
-router.post('/putData', function(req, res) {
+app.post('/api/putData', function(req, res) {
 
   let data = new Data();
 
@@ -141,7 +159,7 @@ router.post('/putData', function(req, res) {
   } );
 });
 
-router.post("/register" , (req, res) => {
+app.post("/api/register" , (req, res) => {
 
   console.log("Registration request received.");
   console.log(req.body.username + " - " + req.body.password);
@@ -153,14 +171,43 @@ router.post("/register" , (req, res) => {
       // res.redirect("/register");
     } else {
       passport.authenticate("local")(req, res, () => {
+        console.log("Authenticating...");
+        return res.json({ success: true });
+      });
+    }
+  });
+});
+
+app.post("/api/login", function(req, res){
+
+  console.log("Login request received.");
+  console.log(req.body.username + " - " + req.body.password);
+
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password
+  });
+
+  req.login(user, function(err){
+    if (err) {
+      console.log(err);
+    }
+    else {
+      passport.authenticate("local")(req, res, function(){
         console.log("Authentication");
         return res.json({ success: true });
       });
     }
   });
 
+});
 
-
+app.get("/api/logout", (req, res) => {
+  console.log("Logging out");
+  req.logout();
+  req.session.destroy((err) => {
+    return res.send({ authenticated: req.isAuthenticated()});
+  });
 });
 
 // launch our backend into a port
