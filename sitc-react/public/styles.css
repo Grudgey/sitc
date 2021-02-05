@@ -13,14 +13,11 @@ body {
   align-items: center;
   -webkit-box-pack: center;
   justify-content: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f5f5f5;
 }
 
 .form-signin {
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
   padding: 25px;
   margin: 0 auto;
 }
@@ -37,12 +34,13 @@ body {
 .form-signin .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="email"] {
+
+.top-input {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.form-signin input[type="password"] {
+.bottom-input {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -50,29 +48,27 @@ body {
 
 .login-div {
     background-color: rgb(29, 29, 29);
-    border-radius: 10%;
+    border-radius: 2rem;
     padding: 4%;
 }
 
-.upload-div {
-  background-color: rgb(29, 29, 29);
-  border-radius: 10%;
-
-}
-
-.upload-position {
+.upload-form {
   padding: 2%;
   background-color: rgb(29, 29, 29);
-  border-radius: 10%;
-  position: absolute;  
-  top:30%;
-  left: 50%;
-  transform: translateX(-50%);
+  border-radius: 2rem;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 200;
+  margin-bottom: 5%;
 }
 
 h1 {
     color: rgb(255, 255, 255);
-    font-weight: 200;
+}
+
+h2 {
+  color: rgb(0, 0, 0);
 }
 
 .project {
@@ -95,21 +91,40 @@ h1 {
     word-wrap: break-word;
   }
 
-  .logout {
-      position: absolute;
-      top:0;
-      right:0;
-  }
-
-.upload {
-    position: absolute;
-    top:0;
-    left:0;
-    background-color: rgb(29, 29, 29);
-    padding: 1%;
-}
-
 .upload p {
     margin-bottom: 0px;
-    color: white;
+}
+
+.navbar {
+  background-color: #0071BC;
+}
+
+.logout {
+  color: white;
+}
+
+.project-single-container {
+  width: 100%;
+  text-align: left;
+}
+
+.project-single-view {
+  margin-top: 10%;
+}
+
+.mixes {
+  border-left: dotted rgb(29, 29, 29) 1px;
+}
+
+.loading {
+  animation: loading-animation infinite 1s linear;
+}
+
+@keyframes loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

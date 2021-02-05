@@ -9,10 +9,9 @@ export default function ProjectsList(props) {
         <div>
         <ul>
         {data.length <= 0
-          ? "loading data..."
+          ? ""
           : data.map(dat => (
-              //all of this should be put in a 'artist - song' component
-              <Project dat={dat} />
+              <Project dat={dat} key={dat._id} toggleSingleViewId={props.toggleSingleViewId}/>
             ))}
         </ul>
         </div>

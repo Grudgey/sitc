@@ -6,11 +6,11 @@ const Schema = mongoose.Schema;
 // this will be our data base's data structure
 const SongSchema = new Schema(
   {
-    id: Number,
+    _id: Number,
     artist: String,
     song: String,
-    link: String
-
+    links: [String],
+    comments: [String]
   },
   { timestamps: true }
 );

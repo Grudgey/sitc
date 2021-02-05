@@ -2,11 +2,16 @@ import React, { useState, useEffect } from "react";
 import Upload from "./components/Upload.js";
 import Login from "./components/Login";
 import axios from "axios";
-import ProjectsList from "./components/ProjectsList.js";
+import ProjectsListView from "./components/ProjectsListView.js";
+import ProjectSingleView from "./components/ProjectSingleView.js";
+import Loading from "./components/Loading";
+
+//TODO
+//Sort out authentication issues 
 
 function App() {
   axios.defaults.withCredentials = true;
-  // initialize our state
+
   // const [state, setState] = useState ({
   //   data: [],
   //   id: 0,
@@ -19,58 +24,51 @@ function App() {
   // });
 
   const [data, setData] = useState([]);
-  const [id, setId] = useState(0);
   const [artist, setArtist] = useState("");
   const [song, setSong] = useState("");
+  const [comment, setComment] = useState("");
   const [intervalIsSet, setIntervalIsSet] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
-  const [idToUpdate, setIdToUpdate] = useState(null);
-  const [objectToUpdate, setObjectToUpdate] = useState(null);
 
   const [authenticated, setAuthentication] = useState(false);
+  const [singleViewId, setsingleViewId] = useState(-1);
+  const [loading, setIsLoading] = useState(false);
 
-  //setState(prevValue) {} spread operator
 
-  // just a note, here, in the front end, we use the id key of our data object
-  // in order to identify which we want to Update or delete.
-  // for our back end, we use the object id assigned by MongoDB to modify
-  // data base entries
+  const toggleSingleViewId = function(_id) {
+    console.log(_id);
+    setsingleViewId(_id);
+  };
 
-  // our first get method that uses our backend api to
-  // fetch data from our data base
-  function getDataFromDb() {
-    if (intervalIsSet === false) {
-      setIntervalIsSet(true);
-    }
-    axios("http://localhost:3001/api/getData", { withCredentials: true })
-      // .then(function (response) {
-      //     console.log(response.data);
-      // });
-      .then((response) => {
-        if (response.data === "Is not authenticated") {
-          console.log(response.data.data);
-        } else {
-          setData(response.data.data);
-        }
-      });
-  }
+  const toggleLoading = (isLoading) => {
+    console.log("Toggle loading called");
+    setIsLoading(isLoading);    
+  };
 
-  // our put method that uses our backend api
-  // to create new query into our data base
-  function putDataToDB(fileName) {
-    console.log("About to post to backend " + fileName);
-    let currentIds = data.map((data) => data.id);
+  function putDataToDB(fileName, comment, idToUpdate, links) {
+    let currentIds = data.map((data) => data._id);
     let idToBeAdded = 0;
     while (currentIds.includes(idToBeAdded)) {
       ++idToBeAdded;
     }
 
-    axios.post("http://localhost:3001/api/putData", {
-      fileName: fileName,
-      id: idToBeAdded,
-      artist: artist,
-      song: song,
-    });
+    if(!links) {
+      
+      axios.post("http://localhost:3001/api/putData", {
+        fileName: fileName,
+        _id: idToBeAdded,
+        artist: artist,
+        song: song,
+        comment: comment
+      }).then(toggleLoading(false));
+    } else {
+      console.log("Adding new version to DB " + fileName);
+      axios.post('http://localhost:3001/api/updateData', {
+        _id: idToUpdate,
+        fileName: fileName,
+        links: links,
+        comment: comment
+      }).then(toggleLoading(false));
+    }
   }
 
   function logout() {
@@ -113,41 +111,21 @@ function App() {
       });
   }
 
-  // our delete method that uses our backend api
-  // to remove existing database information
-  // function deleteFromDB(idTodelete) {
-  //   parseInt(idTodelete);
-  //   let objIdToDelete = null;
-  //   data.forEach((dat) => {
-  //     if (dat.id == idTodelete) {
-  //       objIdToDelete = dat._id;
-  //     }
-  //   });
+  function deleteById(id) {
+    console.log("Making delete call to server with to delete project with ID " + id);
+    toggleSingleViewId(-1);
+    toggleLoading(true);
+    //axios.delete does not send data object. This is a known issue, the following is the recommended workaround 
 
-  //   axios.delete('http://localhost:3001/api/deleteData', {
-  //     data: {
-  //       id: objIdToDelete,
-  //     },
-  //   });
-  // };
-
-  // our update method that uses our backend api
-  // to overwrite existing data base information
-  // function updateDB(idToUpdate, updateToApply) {
-  //   let objIdToUpdate = null;
-  //   parseInt(idToUpdate);
-  // data.forEach((dat) => {
-  //     if (dat.id == idToUpdate) {
-  //       objIdToUpdate = dat._id;
-  //     }
-  //   });
-
-  //   axios.post('http://localhost:3001/api/updateData', {
-  //     id: objIdToUpdate,
-  //     update: { song: updateToApply },
-  //     update: { artist: updateToApply }
-  //   });
-  // };
+    axios.request({method: 'delete', url: 'http://localhost:3001/api/deleteData', data: {id: id}})
+    .then(response => {
+      console.log(response);
+      toggleLoading(false);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  };
 
   // here is our UI
   // it is easy to understand their functions when you
@@ -155,29 +133,80 @@ function App() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getDataFromDb();
-    }, 2000);
+      if (intervalIsSet === false) {
+        setIntervalIsSet(true);
+      }
+      axios("http://localhost:3001/api/getData", {
+        withCredentials: true,
+      }).then((response) => {
+        if (response.data === "Is not authenticated") {
+          console.log(response.data.data);
+        } else {
+          if(!authenticated) {
+            setAuthentication(true);
+          }
+          console.log("Grabbing data ");
+          setData(response.data.data);
+        }
+      });
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [authenticated, intervalIsSet]);
 
   return (
     <div>
       {authenticated ? (
         <div>
-          <button className="logout" onClick={logout} name="logout">
-            Logout
-          </button>
+          <div className="navbar fixed-top">
+            <div className="container-fluid">
+              <div className="d-flex align-items-center">
+                <img
+                  className="me-3"
+                  src="./images/sitc-logo.png"
+                  alt=""
+                  width="10%"
+                />
+                <Upload
+                  newProject={true}
+                  setArtist={setArtist}
+                  artist={artist}
+                  setSong={setSong}
+                  song={song}
+                  setComment={setComment}
+                  comment={comment}
+                  putDataToDB={putDataToDB}
+                  toggleLoading={toggleLoading}
+                />
+              </div>
 
-          <ProjectsList data={data}/>
+              <div className="d-flex justify-content-end">
+                <button className="btn logout" onClick={logout} name="logout">
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
 
-          <Upload
-            setArtist={setArtist}
-            artist={artist}
-            setSong={setSong}
-            song={song}
-            putDataToDB={putDataToDB}
-          />
+          {singleViewId === -1 ? (
+            <ProjectsListView
+              data={data}
+              toggleSingleViewId={toggleSingleViewId}
+            />
+          ) : (
+            <ProjectSingleView
+              key={singleViewId}
+              projectData={data[singleViewId]}
+              deleteById={deleteById}
+              toggleSingleViewId={toggleSingleViewId}
+              putDataToDB={putDataToDB}
+              toggleLoading={toggleLoading}
+              setComment={setComment}
+              comment={comment}
+            />
+          )}
+          <Loading loading={loading} />
         </div>
+        
       ) : (
         <Login authenticate={authenticate} />
       )}
