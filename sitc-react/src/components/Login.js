@@ -15,13 +15,6 @@ function Login(props) {
 
   function handleLogin(e) {
     e.preventDefault();
-    console.log(
-      "about to post login info - " +
-        credentials.username +
-        " and " +
-        credentials.password
-    );
-    console.log(e.nativeEvent.submitter.name);
     props.authenticate(credentials, e.nativeEvent.submitter.name);
   }
 
@@ -32,7 +25,7 @@ function Login(props) {
       <h1 className="">Please login to the Studio</h1>
       <form className="form-signin" onSubmit={handleLogin}>
         <div>
-          <label for="inputEmail" className="visually-hidden">
+          <label htmlFor="inputEmail" className="visually-hidden">
             Email
           </label>
           <input
@@ -48,7 +41,7 @@ function Login(props) {
           />
         </div>
         <div>
-          <label for="inputPassword" className="visually-hidden">
+          <label htmlFor="inputPassword" className="visually-hidden">
             Password
           </label>
           <input

@@ -6,15 +6,13 @@ function Upload(props) {
   const [isClosed, setIsClosed] = useState(false);
 
   const toggleOpen = () => {
-    console.log("Toggle open called");
     setIsClosed(!isClosed);
   };
 
   function dropboxUpload(e) {
     e.preventDefault();
     toggleOpen();
-    
-    props.toggleLoading(true);
+    props.setIsLoading(true);
 
     const dbx = new Dropbox({
       accessToken: process.env.REACT_APP_ACCESS_TOKEN,
@@ -25,39 +23,24 @@ function Upload(props) {
 
     let fileName;
 
-    if(!props.links) {
+    if (!props.links) {
       fileName = props.artist + "-" + props.song + "-" + 0;
     } else {
       fileName = props.artist + "-" + props.song + "-" + props.links.length;
     }
 
-    if (props.newProject) {
-      props.putDataToDB(fileName, props.comment);
-    } else {
-      props.putDataToDB(fileName, props._id, props.links, props.comment);
-    }
-
     dbx
       .filesUpload({ path: "/" + fileName, contents: file })
       .then(function (response) {
-        console.log(
-          "Upload success - adding " +
-            fileName +
-            " with ID " +
-            file.id +
-            " to DB"
-        );
-
         if (props.newProject) {
-          props.putDataToDB(fileName, props.comment);
+          props.createNewProject(fileName, props.comment);
         } else {
-          props.putDataToDB(fileName, props.comment, props._id, props.links);
+          props.uploadNewMix(fileName, props.comment, props._id, props.links);
         }
       })
       .catch(function (error) {
         console.error(error);
-        console.log("Upload failed");
-        props.toggleLoading(false);
+        props.setIsLoading(false);
       });
   }
 
@@ -91,35 +74,39 @@ function Upload(props) {
           <form className="form-signin" onSubmit={dropboxUpload}>
             {props.newProject && (
               <div>
-                  <label for="inputArtist" className="visually-hidden">
-                    Artist
-                  </label>
-                  <input
-                    required
-                    autofocus
-                    id="inputArtist"
-                    className="form-control top-input"
-                    type="text"
-                    onChange={(e) => props.setArtist(e.target.value)}
-                    placeholder="Artist"
-                    value={props.artist}
-                  />
-                  <label for="inputSong" className="visually-hidden">
-                    Song
-                  </label>
-                  <input
-                    required
-                    autofocus
-                    id="inputSong"
-                    className="form-control bottom-input"
-                    type="text"
-                    onChange={(e) => props.setSong(e.target.value)}
-                    placeholder="Song Title"
-                    value={props.song}
-                  />
+                <label htmlFor="inputArtist" className="visually-hidden">
+                  Artist
+                </label>
+                <input
+                  required
+                  autoFocus
+                  id="inputArtist"
+                  className="form-control top-input"
+                  type="text"
+                  onChange={(e) =>
+                    props.setState({ ...props.state, artist: e.target.value })
+                  }
+                  placeholder="Artist"
+                  value={props.artist}
+                />
+                <label htmlFor="inputSong" className="visually-hidden">
+                  Song
+                </label>
+                <input
+                  required
+                  autoFocus
+                  id="inputSong"
+                  className="form-control bottom-input"
+                  type="text"
+                  onChange={(e) =>
+                    props.setState({ ...props.state, song: e.target.value })
+                  }
+                  placeholder="Song Title"
+                  value={props.song}
+                />
               </div>
             )}
-            <label for="file-upload" className="visually-hidden">
+            <label htmlFor="file-upload" className="visually-hidden">
               Add File For Upload
             </label>
             <input
@@ -128,14 +115,16 @@ function Upload(props) {
               id="file-upload"
               required
             />
-            <label for="comment" className="visually-hidden">
-               Mix Comment
+            <label htmlFor="comment" className="visually-hidden">
+              Mix Comment
             </label>
             <input
               className="form-control bottom-input"
               type="text"
               id="comment"
-              onChange={(e) => props.setComment(e.target.value)}
+              onChange={(e) =>
+                props.setState({ ...props.state, comment: e.target.value })
+              }
               placeholder="Mix comment"
               value={props.comment}
             />
@@ -144,8 +133,7 @@ function Upload(props) {
             <button className="btn btn-lg btn-light btn-block" type="submit">
               UPLOAD
             </button>
-            
-        </form>
+          </form>
         </div>
       </Modal>
     </div>

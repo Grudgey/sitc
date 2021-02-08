@@ -6,78 +6,76 @@ import ProjectsListView from "./components/ProjectsListView.js";
 import ProjectSingleView from "./components/ProjectSingleView.js";
 import Loading from "./components/Loading";
 
-//TODO
-//Sort out authentication issues 
-
 function App() {
   axios.defaults.withCredentials = true;
 
-  // const [state, setState] = useState ({
-  //   data: [],
-  //   id: 0,
-  //   artist: null,
-  //   song: null,
-  //   intervalIsSet: false,
-  //   idToDelete: null,
-  //   idToUpdate: null,
-  //   objectToUpdate: null,
-  // });
+  const [state, setState] = useState({
+    artist: "",
+    song: "",
+    comment: "",
+    intervalIsSet: false,
+    authenticated: false,
+  });
+
+  const { artist, song, comment, intervalIsSet, authenticated } = state;
 
   const [data, setData] = useState([]);
-  const [artist, setArtist] = useState("");
-  const [song, setSong] = useState("");
-  const [comment, setComment] = useState("");
-  const [intervalIsSet, setIntervalIsSet] = useState(false);
-
-  const [authenticated, setAuthentication] = useState(false);
-  const [singleViewId, setsingleViewId] = useState(-1);
+  const [singleViewModeId, setViewMode] = useState(-1);
   const [loading, setIsLoading] = useState(false);
 
-
-  const toggleSingleViewId = function(_id) {
-    console.log(_id);
-    setsingleViewId(_id);
-  };
-
-  const toggleLoading = (isLoading) => {
-    console.log("Toggle loading called");
-    setIsLoading(isLoading);    
-  };
-
-  function putDataToDB(fileName, comment, idToUpdate, links) {
+  function createNewProject(fileName, comment) {
     let currentIds = data.map((data) => data._id);
     let idToBeAdded = 0;
     while (currentIds.includes(idToBeAdded)) {
       ++idToBeAdded;
     }
 
-    if(!links) {
-      
-      axios.post("http://localhost:3001/api/putData", {
+    axios
+      .post("http://localhost:3001/api/putData", {
         fileName: fileName,
         _id: idToBeAdded,
         artist: artist,
         song: song,
-        comment: comment
-      }).then(toggleLoading(false));
-    } else {
-      console.log("Adding new version to DB " + fileName);
-      axios.post('http://localhost:3001/api/updateData', {
+        comment: comment,
+      })
+      .then(() => {
+        setState({
+          ...state,
+          artist: "",
+          song: "",
+          comment: "",
+        });
+        setIsLoading(false);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function uploadNewMix(fileName, comment, idToUpdate, links) {
+    axios
+      .post("http://localhost:3001/api/updateData", {
         _id: idToUpdate,
         fileName: fileName,
         links: links,
-        comment: comment
-      }).then(toggleLoading(false));
-    }
+        comment: comment,
+      })
+      .then(() => {
+        setState({
+          ...state,
+          artist: "",
+          song: "",
+          comment: "",
+        });
+        setIsLoading(false);
+      })
+      .catch((err) => console.log(err));
   }
 
   function logout() {
     axios
-      .get("http://localhost:3001/api/logout", { withCredentials: true })
+      .get("http://localhost:3001/api/logout")
       .then(function (response) {
         console.log("Logged out");
-        console.log(response);
-        setAuthentication(false);
+        setState({ ...state, authenticated: false });
       })
       .catch(function (error) {
         console.log(error);
@@ -91,67 +89,65 @@ function App() {
     // "http://localhost:3001/api/register" : "http://localhost:3001/api/login";
 
     axios
-      .post(
-        "http://localhost:3001/api/login",
-        {
-          password: password,
-          username: username,
-        },
-        { withCredentials: true }
-      )
+      .post("http://localhost:3001/api/login", {
+        password: password,
+        username: username,
+      })
       .then(function (response) {
         if (response.status === 200) {
           console.log("Logged in");
-          setAuthentication(true);
+          setState({ ...state, authenticated: true });
         }
       })
       .catch(function (error) {
         console.log(error);
-        setAuthentication(false);
+        setState({ ...state, authenticated: false });
       });
   }
 
   function deleteById(id) {
-    console.log("Making delete call to server with to delete project with ID " + id);
-    toggleSingleViewId(-1);
-    toggleLoading(true);
-    //axios.delete does not send data object. This is a known issue, the following is the recommended workaround 
+    setViewMode(-1);
+    setIsLoading(true);
+    //axios.delete does not send data object. This is a known issue, the following is the recommended workaround
 
-    axios.request({method: 'delete', url: 'http://localhost:3001/api/deleteData', data: {id: id}})
-    .then(response => {
-      console.log(response);
-      toggleLoading(false);
-    })
-    .catch(err => {
-      console.log(err);
-    });
-  };
+    axios
+      .request({
+        method: "delete",
+        url: "http://localhost:3001/api/deleteData",
+        data: { id: id },
+      })
+      .then((response) => {
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
-  // here is our UI
-  // it is easy to understand their functions when you
-  // see them render into our screen
-
+  //Set an interval timer to make getData API requests 
   useEffect(() => {
     const interval = setInterval(() => {
       if (intervalIsSet === false) {
-        setIntervalIsSet(true);
+        setState({ ...state, intervalIsSet: true });
       }
-      axios("http://localhost:3001/api/getData", {
-        withCredentials: true,
-      }).then((response) => {
-        if (response.data === "Is not authenticated") {
-          console.log(response.data.data);
-        } else {
-          if(!authenticated) {
-            setAuthentication(true);
+      axios("http://localhost:3001/api/getData", {})
+        .then((response) => {
+          if (response.data.success) {
+            setData(response.data.data);
+            if (!authenticated) {
+              setState({ ...state, authenticated: true });
+            }
+          } else {
+            console.log("Error retrieving data");
+            setState({ ...state, authenticated: false });
           }
-          console.log("Grabbing data ");
-          setData(response.data.data);
-        }
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }, 1000);
     return () => clearInterval(interval);
-  }, [authenticated, intervalIsSet]);
+  }, [authenticated, intervalIsSet, state]);
 
   return (
     <div>
@@ -168,14 +164,13 @@ function App() {
                 />
                 <Upload
                   newProject={true}
-                  setArtist={setArtist}
+                  setState={setState}
+                  state={state}
                   artist={artist}
-                  setSong={setSong}
                   song={song}
-                  setComment={setComment}
                   comment={comment}
-                  putDataToDB={putDataToDB}
-                  toggleLoading={toggleLoading}
+                  createNewProject={createNewProject}
+                  setIsLoading={setIsLoading}
                 />
               </div>
 
@@ -187,26 +182,25 @@ function App() {
             </div>
           </div>
 
-          {singleViewId === -1 ? (
-            <ProjectsListView
-              data={data}
-              toggleSingleViewId={toggleSingleViewId}
-            />
+          {singleViewModeId === -1 ? (
+            <ProjectsListView data={data} setViewMode={setViewMode} />
           ) : (
             <ProjectSingleView
-              key={singleViewId}
-              projectData={data[singleViewId]}
+              key={singleViewModeId}
+              projectData={data.filter((dat) => {
+                return dat._id === singleViewModeId;
+              })}
               deleteById={deleteById}
-              toggleSingleViewId={toggleSingleViewId}
-              putDataToDB={putDataToDB}
-              toggleLoading={toggleLoading}
-              setComment={setComment}
+              setViewMode={setViewMode}
+              uploadNewMix={uploadNewMix}
+              setIsLoading={setIsLoading}
+              setState={setState}
+              state={state}
               comment={comment}
             />
           )}
           <Loading loading={loading} />
         </div>
-        
       ) : (
         <Login authenticate={authenticate} />
       )}
