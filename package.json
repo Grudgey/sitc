@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd backend && node server.js\" \"cd sitc-react && npm start\"",
+    "install": "(cd backend && npm) && (cd sitc-react && npm)",
+    "start": "concurrently \"cd backend && npm start\" \"cd sitc-react && npm start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

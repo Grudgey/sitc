@@ -329,5 +329,7 @@ app.get("/api/logout", (req, res) => {
   });
 });
 
+const port = process.env.PORT || 3001;
+
 // launch our backend into a port
-app.listen(process.env.API_PORT, () => console.log(`LISTENING ON PORT ${process.env.API_PORT}`));
+app.listen(port, () => console.log(`LISTENING ON PORT ${port}`));
