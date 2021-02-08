@@ -55,7 +55,7 @@ function Login(props) {
             required
           />
         </div>
-        {/* <button type="submit" name="register">Register</button> */}
+        <button className="btn btn-lg btn-dark btn-block" type="submit" name="register">Register</button>
         <button
           className="btn btn-lg btn-light btn-block"
           type="submit"

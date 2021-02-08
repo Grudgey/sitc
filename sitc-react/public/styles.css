@@ -110,10 +110,11 @@ h4 {
 .project-single-container {
   width: 100%;
   text-align: left;
+  margin-top: 250px;
 }
 
 .project-single-view {
-  margin-top: 10%;
+  margin-top: 50px;
 }
 
 .mixes {

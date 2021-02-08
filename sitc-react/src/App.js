@@ -85,11 +85,11 @@ function App() {
   function authenticate(credentials, loginType) {
     const { username, password } = credentials;
 
-    // const postRoute = (loginType === "register") ?
-    // "http://localhost:3001/api/register" : "http://localhost:3001/api/login";
+    const authRoute = (loginType === "register") ?
+    "/api/register" : "/api/login";
 
     axios
-      .post("/api/login", {
+      .post(authRoute, {
         password: password,
         username: username,
       })
