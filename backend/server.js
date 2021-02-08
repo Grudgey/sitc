@@ -1,5 +1,5 @@
 //IMPORTS
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
