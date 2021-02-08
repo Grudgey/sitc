@@ -31,7 +31,7 @@ function App() {
     }
 
     axios
-      .post("http://localhost:3001/api/putData", {
+      .post("/api/putData", {
         fileName: fileName,
         _id: idToBeAdded,
         artist: artist,
@@ -52,7 +52,7 @@ function App() {
 
   function uploadNewMix(fileName, comment, idToUpdate, links) {
     axios
-      .post("http://localhost:3001/api/updateData", {
+      .post("/api/updateData", {
         _id: idToUpdate,
         fileName: fileName,
         links: links,
@@ -72,7 +72,7 @@ function App() {
 
   function logout() {
     axios
-      .get("http://localhost:3001/api/logout")
+      .get("/api/logout")
       .then(function (response) {
         console.log("Logged out");
         setState({ ...state, authenticated: false });
@@ -89,7 +89,7 @@ function App() {
     // "http://localhost:3001/api/register" : "http://localhost:3001/api/login";
 
     axios
-      .post("http://localhost:3001/api/login", {
+      .post("/api/login", {
         password: password,
         username: username,
       })
@@ -113,7 +113,7 @@ function App() {
     axios
       .request({
         method: "delete",
-        url: "http://localhost:3001/api/deleteData",
+        url: "/api/deleteData",
         data: { id: id },
       })
       .then((response) => {
@@ -130,7 +130,7 @@ function App() {
       if (intervalIsSet === false) {
         setState({ ...state, intervalIsSet: true });
       }
-      axios("http://localhost:3001/api/getData", {})
+      axios("/api/getData", {})
         .then((response) => {
           if (response.data.success) {
             setData(response.data.data);
@@ -158,13 +158,13 @@ function App() {
               <div className="d-flex align-items-center">
                 <img
                   className="me-3"
-                  src="./images/sitc-logo.png"
+                  src="/images/sitc-logo.png"
                   alt=""
                   width="10%"
                 />
                 <Upload
                   newProject={true}
-                  setState={setState}
+                  setState={setState} 
                   state={state}
                   artist={artist}
                   song={song}

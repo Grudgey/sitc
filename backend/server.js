@@ -69,9 +69,11 @@ function deleteSongFromDropbox(links, callback) {
 
 const app = express();
 
+app.use(express.static(path.join(__dirname,"..",'sitc-react/build')));
+app.use(express.static("public"));
+
 app.use(cors({
   credentials: true,
-  origin: "http://localhost:3000"
 }));
 
 app.use(bodyParser.urlencoded({
@@ -329,7 +331,7 @@ app.get("/api/logout", (req, res) => {
   });
 });
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3003;
 
 // launch our backend into a port
 app.listen(port, () => console.log(`LISTENING ON PORT ${port}`));
