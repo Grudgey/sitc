@@ -15,7 +15,7 @@ function Login(props) {
 
   function handleLogin(e) {
     e.preventDefault();
-    props.authenticate(credentials, e.nativeEvent.submitter.name);
+    props.authenticate(credentials, e.target.name);
   }
 
   return (
@@ -23,7 +23,7 @@ function Login(props) {
       <img className="mb-3" src="./images/sitc-logo.png" width="200px" alt="" />
 
       <h1 className="">Please login to the Studio</h1>
-      <form className="form-signin" onSubmit={handleLogin}>
+      <form className="form-signin">
         <div>
           <label htmlFor="inputEmail" className="visually-hidden">
             Email
@@ -55,8 +55,18 @@ function Login(props) {
             required
           />
         </div>
-        <button className="btn btn-lg btn-dark btn-block" type="submit" name="register">Register</button>
         <button
+          onTouchStart={handleLogin}
+          onClick={handleLogin}
+          className="btn btn-lg btn-dark btn-block"
+          type="submit"
+          name="register"
+        >
+          Register
+        </button>
+        <button
+          onTouchStart={handleLogin}
+          onClick={handleLogin}
           className="btn btn-lg btn-light btn-block"
           type="submit"
           name="login"

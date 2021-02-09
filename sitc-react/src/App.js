@@ -153,7 +153,7 @@ function App() {
     <div>
       {authenticated ? (
         <div>
-          <div className="navbar fixed-top">
+          <div className="navbar">
             <div className="container-fluid">
               <div className="d-flex align-items-center">
                 <img
@@ -176,14 +176,14 @@ function App() {
 
               <div className="d-flex justify-content-end">
                 <button className="btn logout" onClick={logout} name="logout">
-                  Logout
+                  <p>Logout</p>
                 </button>
               </div>
             </div>
           </div>
-
+          <div className="mt-5">
           {singleViewModeId === -1 ? (
-            <ProjectsListView data={data} setViewMode={setViewMode} />
+            <ProjectsListView data={data} setViewMode={setViewMode}/>
           ) : (
             <ProjectSingleView
               key={singleViewModeId}
@@ -199,10 +199,12 @@ function App() {
               comment={comment}
             />
           )}
+          </div>
+
           <Loading loading={loading} />
         </div>
       ) : (
-        <Login authenticate={authenticate} />
+      <div className="login-container min-vh-100"><Login authenticate={authenticate} /></div>
       )}
     </div>
   );

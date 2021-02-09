@@ -1,36 +1,8 @@
-html,
-body {
-  height: 100%;
-}
-
-body {
-  display: -ms-flexbox;
-  display: -webkit-box;
-  display: flex;
-  -ms-flex-align: center;
-  -ms-flex-pack: center;
-  -webkit-box-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  justify-content: center;
-}
 
 .form-signin {
-  width: 100%;
-  max-width: 400px;
-  padding: 25px;
   margin: 0 auto;
 }
-.form-signin .checkbox {
-  font-weight: 400;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
+
 .form-signin .form-control:focus {
   z-index: 2;
 }
@@ -47,9 +19,17 @@ body {
 }
 
 .login-div {
+    width: 100%;
+    max-width: 400px;
     background-color: rgb(29, 29, 29);
-    border-radius: 2rem;
-    padding: 4%;
+    border-radius: 4rem;
+    padding: 2%;
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .upload-form {
@@ -58,63 +38,43 @@ body {
   border-radius: 2rem;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, p {
   font-weight: 200;
-  margin-right: 1%;
 }
 
 h1 {
     color: rgb(255, 255, 255);
 }
 
-h2 {
-  color: rgb(0, 0, 0);
-}
-
-h4 {
+h3, h4 {
   margin-bottom: 4%;
 }
 
 .project {
-    background: #fff;
-    border-radius: 2rem;
-    box-shadow: 2px 2px 5px rgb(0, 0, 0);
+    min-width: 20%;
+    max-width: 20%;
+    border-radius: 4rem;
+    background-color: rgb(29, 29, 29);
+    color:white;
     margin: 1%;
     padding: 2%;
-    float: left;
-  }
-
-  .project h1 {
-    font-size: 1.1em;
-    margin-bottom: 6px;
-  }
-  .project p {
-    font-size: 1.1em;
-    margin-bottom: 10px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
   }
 
 .upload p {
     margin-bottom: 0px;
+    font-weight: 400;
 }
 
 .navbar {
   background-color: #0071BC;
 }
 
+.navbar p {
+  font-weight: 400;
+}
+
 .logout {
-  color: white;
-}
-
-.project-single-container {
-  width: 100%;
-  text-align: left;
-  margin-top: 250px;
-}
-
-.project-single-view {
-  margin-top: 50px;
+  color:white;
 }
 
 .mixes {
